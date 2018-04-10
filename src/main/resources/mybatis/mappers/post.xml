@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="post">
+	<!-- <select id="" parameterType="" resultType=""> <![CDATA[ ]]> </select> 
+		<insert id="insert" parameterType=" "> <![CDATA[ ]]> </insert> <update id="update" 
+		parameterType=" "> <![CDATA[ ]]> </update> <delete id="delete" parameterType=""> 
+		<![CDATA[ ]]> </delete> -->
+
+	<select id="getPostLatest" parameterType="map" resultType="postvo">
+	<!-- 
+	<![CDATA[
+		select no, title, content, date_format(reg_date,'%Y-%m-%d') regdate , category_no as categoryNo
+			from post where category_no = #{categoryNo}
+	]]> -->
+			<!-- <choose>
+			<when test='categoryNo == null'>	  -->
+				<![CDATA[
+					SELECT no, title, content, reg_date AS regDate
+					FROM POST
+					WHERE CATEGORY_NO IN( SELECT no FROM CATEGORY WHERE ID = #{id} )
+					]]>
+					<if test="categoryNo != null">
+					<![CDATA[
+					  AND category_no = #{categoryNo}
+					  ]]>
+					</if>
+					<![CDATA[
+					ORDER BY REG_DATE DESC 
+					LIMIT 1
+				]]>
+<!-- 				SELECT NO, TITLE, CONTENT, REGDATE, CATEGORYNO 
+				  FROM (SELECT ROWNUM AS RN, NO, TITLE, CONTENT, REGDATE, CATEGORY_NO 
+				          FROM (  SELECT C.NO AS NO, C.TITLE AS TITLE, C.CONTENT AS CONTENT, DATE_FORMAT(C.REG_DATE, '%Y-%M-%D %H:%I:%S') AS REGDATE, C.CATEGORY_NO AS CATEGORYNO 
+				                    FROM BLOG A, CATEGORY B, POST C WHERE A.ID=B.ID AND B.NO=C.CATEGORY_NO AND (A.ID=#{id }) 
+				                ORDER BY C.NO DESC)t ) tt
+				  WHERE RN = 1 -->
+	
+<!-- 
+			</when>
+			<otherwise>
+				<![CDATA[
+				select no, title, content, regDate, categoriesNo from (select rownum as rn, no, title, content, regDate, categoriesNo from (select c.no as no, c.title as title, c.content as content, TO_CHAR (c.reg_date, 'yyyy-mm-dd hh:mi:ss') AS regDate, c.categories_no as categoriesNo from blogs a, categories b, posts c where a.users_no=b.blog_no and b.no=c.categories_no and (a.users_no=#{usersNo } and c.categories_no=#{categoriesNo })  order by c.no desc)) where rn = 1			
+				]]>
+			</otherwise>
+		</choose> -->
+	
+	</select>
+
+
+	<select id="getPostAll"  resultType="postvo">
+	  select no, title, content , date_format(reg_date,'%YY-%mm-%dd') as regDate , category_no as categoryNo
+		from post
+	<if test="categoryNo != null">
+	  where category_no = #{categoryNo}
+	</if>
+	
+		<!-- <choose>
+			<when test='categoriesNo == null'>	
+				<![CDATA[
+				select no, title, content, regDate, categoriesNo from (select rownum as rn, no, title, content, regDate, categoriesNo from (select c.no as no, c.title as title, c.content as content, TO_CHAR (c.reg_date, 'yyyy-mm-dd hh:mi:ss') AS regDate, c.categories_no as categoriesNo from blogs a, categories b, posts c where a.users_no=b.blog_no and b.no=c.categories_no and (a.users_no=#{usersNo })  order by c.no desc)) where rn >= 1 
+				]]>
+			</when>
+			<otherwise>
+				<![CDATA[
+				select no, title, content, regDate, categoriesNo from (select rownum as rn, no, title, content, regDate, categoriesNo from (select c.no as no, c.title as title, c.content as content, TO_CHAR (c.reg_date, 'yyyy-mm-dd hh:mi:ss') AS regDate, c.categories_no as categoriesNo from blogs a, categories b, posts c where a.users_no=b.blog_no and b.no=c.categories_no and (a.users_no=#{usersNo } and c.categories_no=#{categoriesNo })  order by c.no desc)) where rn >= 1
+				]]>
+			</otherwise>
+		</choose> -->
+	</select>
+	
+	<insert id="insertPost" parameterType="postvo">
+	<![CDATA[
+		insert into post values( null, #{title}, #{content}, now(), #{categoryNo} )
+	]]>
+	</insert>
+	
+</mapper>

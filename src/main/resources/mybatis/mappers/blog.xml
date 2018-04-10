@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blog">
+	<select id="getList" parameterType="map" resultType="map">
+	<![CDATA[
+			  SELECT POST.`NO`, POST.TITLE, POST.CONTENT, POST.REG_DATE 
+				FROM POST, CATEGORY, BLOG 
+				WHERE #{id} = CATEGORY.ID
+		 		 AND #{categoryNo} = POST.CATEGORY_NO
+		    ORDER BY #{postNo} DESC
+	]]>
+	</select>
+
+	<select id="getInfo" parameterType="string" resultType="blogvo">	
+	<![CDATA[
+		 SELECT M.ID AS ID, B.TITLE AS TITLE, B.LOGO AS LOGO
+		   FROM MEMBER M, BLOG B
+		  WHERE M.ID = B.ID AND M.ID = #{id}
+	]]>
+	</select>
+	
+	<insert id="insert" parameterType="blogvo">
+	<![CDATA[
+		INSERT INTO BLOG 
+		VALUES( #{id}, #{title}, #{logo} )
+	]]>
+	</insert>
+	
+	<update id="update" parameterType="blogvo">
+	<choose>
+		<when test="logo != null">
+		<![CDATA[
+			UPDATE blog 
+			   SET TITLE = #{title}, LOGO = #{logo} 
+			 WHERE id = #{id}
+		]]>
+		</when>
+		<otherwise>
+			UPDATE blog 
+			   SET TITLE = #{title}
+			 WHERE id = #{id}
+		</otherwise>
+	</choose>
+	
+	</update>
+<!-- 	
+		
+	<delete id="delete" parameterType="">
+	<![CDATA[
+	]]>
+	</delete>
+	 -->
+</mapper>
